@@ -1,0 +1,14 @@
+package uz.pdp.elonbot.entity.enums;
+
+public enum TgState {
+
+    START,
+    ENTERING_PHONE_NUMBER,
+    CHOOSING_SCOOTER_TYPE,
+    ENTERING_SCOOTER_MODEL,
+    CHOOSING_MENU,
+    ENTERING_MAX_SPEED,
+    ENTERING_ENGINE_POWER,
+    ENTERING_RELEASED_YEAR,
+
+}
