@@ -3,7 +3,6 @@ package uz.pdp.elonbot.util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.pdp.elonbot.entity.enums.ScooterType;
-
 import java.time.Year;
 
 @Service
@@ -23,8 +22,15 @@ public class ValidationUtil {
     }
 
     public boolean isValidMaxSpeed(String text) {
+        if (text == null || !text.matches("-?\\d+")) {
+            return false;
+        }
         int maxSpeed = Integer.parseInt(text);
         return maxSpeed > 0 && maxSpeed < 300;
+    }
+
+    public boolean isValidEnginePower(String text) {
+        return true;
     }
 
     public boolean isValidReleasedYear(String text) {
@@ -34,6 +40,25 @@ public class ValidationUtil {
             return year >= 2000 && year <= currentYear;
         }
         return false;
+    }
+
+    public boolean isValidBatteryLife(String text) {
+        if (text == null || !text.matches("-?\\d+")) {
+            return false;
+        }
+        return Integer.parseInt(text) > 0;
+    }
+
+    public boolean isValidKmDriven(String text) {
+        return true;
+    }
+
+    public boolean isValidPrice(String text) {
+        return true;
+    }
+
+    public boolean isValidAddress(String text) {
+        return true;
     }
 
 }

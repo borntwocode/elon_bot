@@ -25,7 +25,7 @@ public class MessageService {
 
     public void sendWithBackButton(TelegramUser user, String text) {
         SendMessage message = new SendMessage(user.getId(), text);
-        message.replyMarkup(botUtils.createBackButton());
+        message.replyMarkup(botUtils.createBackAndCancelButtons());
         Integer messageId = telegramBot.execute(message).message().messageId();
     }
 

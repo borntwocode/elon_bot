@@ -14,12 +14,13 @@ public class BotUtils {
     private static final KeyboardButton BACK_BUTTON = new KeyboardButton(BotConstants.BACK);
     private static final KeyboardButton POST_BUTTON = new KeyboardButton(BotConstants.POST);
     private static final KeyboardButton CANCEL_BUTTON = new KeyboardButton(BotConstants.CANCEL);
+    private static final KeyboardButton EDIT_BUTTON = new KeyboardButton(BotConstants.EDIT);
 
     public Keyboard createScooterTypeButtons() {
         var electric = new KeyboardButton(ScooterType.ELECTRIC.getDisplayName());
         var gasoline = new KeyboardButton(ScooterType.GASOLINE.getDisplayName());
         var keyboardMarkup = new ReplyKeyboardMarkup(electric, gasoline);
-        return keyboardMarkup.addRow(BACK_BUTTON).oneTimeKeyboard(true).resizeKeyboard(true);
+        return keyboardMarkup.addRow(CANCEL_BUTTON, BACK_BUTTON).oneTimeKeyboard(true).resizeKeyboard(true);
     }
 
     public Keyboard createMenuButtons() {
@@ -29,6 +30,16 @@ public class BotUtils {
 
     public Keyboard createCancelButton() {
         var keyboardMarkup = new ReplyKeyboardMarkup(CANCEL_BUTTON);
+        return keyboardMarkup.resizeKeyboard(true).oneTimeKeyboard(true);
+    }
+
+    public Keyboard createPosterButton() {
+        var keyboardMarkup = new ReplyKeyboardMarkup(EDIT_BUTTON, POST_BUTTON).addRow(CANCEL_BUTTON);
+        return keyboardMarkup.resizeKeyboard(true).oneTimeKeyboard(true);
+    }
+
+    public Keyboard createBackAndCancelButtons() {
+        var keyboardMarkup = new ReplyKeyboardMarkup(CANCEL_BUTTON, BACK_BUTTON);
         return keyboardMarkup.resizeKeyboard(true).oneTimeKeyboard(true);
     }
 
