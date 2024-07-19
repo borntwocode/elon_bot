@@ -22,9 +22,9 @@ public class MyBot implements CommandLineRunner {
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
         });
 
-        BotCommand[] commands = {
-                new BotCommand(BotCommands.START, "Boshlash"),
-                new BotCommand(BotCommands.SETTINGS, "Sozlamalar"),
+        BotCommand[] commands = new BotCommand[]{
+                new BotCommand(BotCommands.START, BotValidation.START),
+                new BotCommand(BotCommands.SETTINGS, BotValidation.SETTINGS),
         };
 
         telegramBot.execute(new SetMyCommands(commands));

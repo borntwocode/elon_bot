@@ -25,7 +25,7 @@ public class BotService {
 
     public void showMenu(TelegramUser user) {
         userService.changeUserState(user, TgState.CHOOSING_MENU);
-        messageService.sendWithButton(user, "Tanlang", botUtils.createMenuButtons());
+        messageService.sendWithButton(user, BotValidation.CHOOSE, botUtils.createMenuButtons());
     }
 
     public void createPosterAndAskPhoneNumber(TelegramUser user) {
@@ -35,26 +35,26 @@ public class BotService {
 
     private void askPhoneNumber(TelegramUser user) {
         userService.changeUserState(user, TgState.ENTERING_PHONE_NUMBER);
-        messageService.sendWithButton(user, "Telefon raqamingizni kiriting. (901234567)", botUtils.createCancelButton());
+        messageService.sendWithButton(user, BotValidation.ENTER_PHONE, botUtils.createCancelButton());
     }
 
     public void getPhoneAndAskScooterType(TelegramUser user, String text) {
         if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidPhoneNumber(text)) {
             postService.setPhone(user, text);
             askScooterType(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askPhoneNumber(user);
         }
     }
 
     private void askScooterType(TelegramUser user) {
         userService.changeUserState(user, TgState.CHOOSING_SCOOTER_TYPE);
-        messageService.sendWithButton(user, "Skuter turini tanlang", botUtils.createScooterTypeButtons());
+        messageService.sendWithButton(user, BotValidation.CHOOSE_SCOOTER, botUtils.createScooterTypeButtons());
     }
 
     public void getScooterTypeAndAskModel(TelegramUser user, String text) {
@@ -63,20 +63,20 @@ public class BotService {
             askPhoneNumber(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidScooterType(text)) {
             postService.setScooterType(user, text);
             askScooterModel(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askScooterType(user);
         }
     }
 
     private void askScooterModel(TelegramUser user) {
         userService.changeUserState(user, TgState.ENTERING_SCOOTER_MODEL);
-        messageService.sendWithBackButton(user, "Skuter modelini kiriting");
+        messageService.sendWithBackButton(user, BotValidation.ENTER_SCOOTER_MODEL);
     }
 
     public void getModelAndAskMaxSpeed(TelegramUser user, String text) {
@@ -85,20 +85,20 @@ public class BotService {
             askScooterType(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidModel(text)) {
             postService.setModel(user, text);
             askMaxSpeed(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askScooterModel(user);
         }
     }
 
     private void askMaxSpeed(TelegramUser user) {
         userService.changeUserState(user, TgState.ENTERING_MAX_SPEED);
-        messageService.sendWithBackButton(user, "Maksimal tezligini kiriting km da (100)");
+        messageService.sendWithBackButton(user, BotValidation.ENTER_MAXIMUM_SPEED);
     }
 
     public void getMaxSpeedAndAskEnginePower(TelegramUser user, String text) {
@@ -107,22 +107,22 @@ public class BotService {
             askScooterModel(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidMaxSpeed(text)) {
             postService.setMaxSpeed(user, text);
             askEnginePower(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askMaxSpeed(user);
         }
     }
 
     private void askEnginePower(TelegramUser user) {
         PosterDetails posterDetails = postService.getPosterDetails(user);
-        String text = posterDetails.getScooterType().equals(ScooterType.ELECTRIC) ? "Motor quvvatini" : "Motor ot kuchini";
+        String text = posterDetails.getScooterType().equals(ScooterType.ELECTRIC) ? BotValidation.ENTER_ENGINE_POWER :BotValidation.ENTER_GASOLINE_POWER;
         userService.changeUserState(user, TgState.ENTERING_ENGINE_POWER);
-        messageService.sendWithBackButton(user, text + " kiriting");
+        messageService.sendWithBackButton(user, text + BotValidation.ENTER_MESSAGE);
     }
 
     public void getEnginePowerAndAskYear(TelegramUser user, String text) {
@@ -131,20 +131,20 @@ public class BotService {
             askMaxSpeed(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidEnginePower(text)) {
             postService.setEnginePower(user, text);
             askReleasedYear(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askEnginePower(user);
         }
     }
 
     private void askReleasedYear(TelegramUser user) {
         userService.changeUserState(user, TgState.ENTERING_RELEASED_YEAR);
-        messageService.sendWithBackButton(user, "Skuter chiqarilgan yilini kiriting");
+        messageService.sendWithBackButton(user, BotValidation.CREATE_SCOOTER_DATE);
     }
 
     public void getReleasedYearAndAskBatteryLife(TelegramUser user, String text) {
@@ -153,22 +153,22 @@ public class BotService {
             askEnginePower(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidReleasedYear(text)) {
             postService.setReleasedYear(user, text);
             askBatteryLife(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askReleasedYear(user);
         }
     }
 
     private void askBatteryLife(TelegramUser user) {
         PosterDetails posterDetails = postService.getPosterDetails(user);
-        String text = posterDetails.getScooterType().equals(ScooterType.ELECTRIC) ? "Akkumulyator quvvatini" : "100km ga nechi litr benzin sarfalshini";
+        String text = posterDetails.getScooterType().equals(ScooterType.ELECTRIC) ? BotValidation.ENTER_CHARGE: BotValidation.ENTER_GASOLINE_FOR_100KM;
         userService.changeUserState(user, TgState.ENTERING_BATTERY_LIFE);
-        messageService.sendWithBackButton(user, text + " kiriting");
+        messageService.sendWithBackButton(user, text + BotValidation.ENTER_MESSAGE);
     }
 
     public void getBatteryLifeAndAskKmDriven(TelegramUser user, String text) {
@@ -177,20 +177,20 @@ public class BotService {
             askReleasedYear(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidBatteryLife(text)) {
             postService.setBatteryLife(user, text);
             askKmDriven(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askBatteryLife(user);
         }
     }
 
     private void askKmDriven(TelegramUser user) {
         userService.changeUserState(user, TgState.ENTERING_KM_DRIVEN);
-        messageService.sendWithBackButton(user, "Skuter bosib o'tgan yo'lni kiriting");
+        messageService.sendWithBackButton(user, BotValidation.ENTER_SCOOTER_KM);
     }
 
     public void getKmDrivenAndAskPrice(TelegramUser user, String text) {
@@ -199,20 +199,20 @@ public class BotService {
             askBatteryLife(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidKmDriven(text)) {
             postService.setKmDriven(user, text);
             askPrice(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askKmDriven(user);
         }
     }
 
     private void askPrice(TelegramUser user) {
         userService.changeUserState(user, TgState.ENTERING_PRICE);
-        messageService.sendWithBackButton(user, "Skuter narxini kiriting");
+        messageService.sendWithBackButton(user, BotValidation.ENTER_PRICE);
     }
 
     public void getPriceAndAskAddress(TelegramUser user, String text) {
@@ -221,20 +221,20 @@ public class BotService {
             askKmDriven(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidPrice(text)) {
             postService.setPrice(user, text);
             askAddress(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askPrice(user);
         }
     }
 
     private void askAddress(TelegramUser user) {
         userService.changeUserState(user, TgState.ENTERING_ADDRESS);
-        messageService.sendWithBackButton(user, "Adresingizni kiriting (Viloyat, Shahar)");
+        messageService.sendWithBackButton(user, BotValidation.ADDRESS);
     }
 
     public void getAddressAndAskPhoto(TelegramUser user, String text) {
@@ -243,20 +243,20 @@ public class BotService {
             askPrice(user);
         } else if (text.equals(BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (validationUtil.isValidAddress(text)) {
             postService.setAddress(user, text);
             askScooterPhoto(user);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askAddress(user);
         }
     }
 
     private void askScooterPhoto(TelegramUser user) {
         userService.changeUserState(user, TgState.SENDING_PHOTO);
-        messageService.sendWithBackButton(user, "Skuter rasm(lar)ini jo'nating");
+        messageService.sendWithBackButton(user, BotValidation.IMAGES);
     }
 
     public void getPhotosAndSendPost(TelegramUser user, Message message) {
@@ -265,7 +265,7 @@ public class BotService {
             askAddress(user);
         } else if (Objects.equals(message.text(), BotConstants.CANCEL)) {
             postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
+            messageService.sendMessage(user, BotValidation.CANCEL);
             showMenu(user);
         } else if (message.photo() != null) {
             Photo photo = photoService.getPhoto(message.photo());
@@ -273,7 +273,7 @@ public class BotService {
             String text = postService.getPosterMessage(user);
             sendPoster(user, text, photo);
         } else {
-            messageService.sendMessage(user, "Noto'g'ri format");
+            messageService.sendMessage(user, BotValidation.INVALID_FORMAT);
             askScooterPhoto(user);
         }
     }
