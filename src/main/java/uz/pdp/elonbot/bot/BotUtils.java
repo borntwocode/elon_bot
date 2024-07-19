@@ -1,10 +1,9 @@
 package uz.pdp.elonbot.bot;
 
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import uz.pdp.elonbot.entity.Poster;
 import uz.pdp.elonbot.entity.enums.ScooterType;
 
 @Service
@@ -46,6 +45,15 @@ public class BotUtils {
     public Keyboard createBackButton() {
         var keyboardMarkup = new ReplyKeyboardMarkup(BACK_BUTTON);
         return keyboardMarkup.resizeKeyboard(true).oneTimeKeyboard(true);
+    }
+
+    public Keyboard createPosterAdminButtons(Poster poster) {
+        var keyboardMarkup = new InlineKeyboardMarkup();
+        keyboardMarkup.addRow(
+                new InlineKeyboardButton(BotConstants.REJECT_POST).callbackData(BotConstants.REJECT_POST + "_" + poster.getId()),
+                new InlineKeyboardButton(BotConstants.SUBMIT_POST).callbackData(BotConstants.SUBMIT_POST + "_" + poster.getId())
+        );
+        return keyboardMarkup;
     }
 
 }

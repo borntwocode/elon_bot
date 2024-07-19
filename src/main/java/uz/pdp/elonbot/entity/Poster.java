@@ -26,6 +26,8 @@ public class Poster {
 
     private boolean isCompleted;
 
+    private boolean isAccepted;
+
     @OneToOne(cascade = CascadeType.ALL)
     private PosterDetails posterDetails;
 

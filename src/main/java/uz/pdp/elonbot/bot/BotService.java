@@ -1,5 +1,7 @@
 package uz.pdp.elonbot.bot;
 
+import com.pengrad.telegrambot.model.request.ParseMode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
@@ -15,6 +17,10 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BotService {
 
+    private final TelegramUserService telegramUserService;
+    @Value("${channel.username}")
+    private String channelUsername;
+
     private final MessageService messageService;
     private final TelegramUserService userService;
     private final ValidationUtil validationUtil;
@@ -22,15 +28,24 @@ public class BotService {
     private final PostService postService;
     private final PhotoService photoService;
     private final TelegramBot telegramBot;
+    private final AdminService adminService;
+    private final TestService testService;
 
     public void showMenu(TelegramUser user) {
+        postService.deletePosterIfPresent(user);
         userService.changeUserState(user, TgState.CHOOSING_MENU);
         messageService.sendWithButton(user, "Tanlang", botUtils.createMenuButtons());
     }
 
     public void createPosterAndAskPhoneNumber(TelegramUser user) {
-        postService.createPoster(user);
-        askPhoneNumber(user);
+        if (postService.isPendingPoster(user)) {
+            messageService.sendMessage(user, "E'lon berib bo'lgansiz");
+            showMenu(user);
+        } else {
+            testService.createPost(user, this);
+//            postService.createPoster(user);
+//            askPhoneNumber(user);
+        }
     }
 
     private void askPhoneNumber(TelegramUser user) {
@@ -40,9 +55,7 @@ public class BotService {
 
     public void getPhoneAndAskScooterType(TelegramUser user, String text) {
         if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidPhoneNumber(text)) {
             postService.setPhone(user, text);
             askScooterType(user);
@@ -62,9 +75,7 @@ public class BotService {
             postService.setPhone(user, null);
             askPhoneNumber(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidScooterType(text)) {
             postService.setScooterType(user, text);
             askScooterModel(user);
@@ -84,9 +95,7 @@ public class BotService {
             postService.setScooterType(user, null);
             askScooterType(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidModel(text)) {
             postService.setModel(user, text);
             askMaxSpeed(user);
@@ -106,9 +115,7 @@ public class BotService {
             postService.setModel(user, null);
             askScooterModel(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidMaxSpeed(text)) {
             postService.setMaxSpeed(user, text);
             askEnginePower(user);
@@ -130,9 +137,7 @@ public class BotService {
             postService.setMaxSpeed(user, null);
             askMaxSpeed(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidEnginePower(text)) {
             postService.setEnginePower(user, text);
             askReleasedYear(user);
@@ -152,9 +157,7 @@ public class BotService {
             postService.setEnginePower(user, null);
             askEnginePower(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidReleasedYear(text)) {
             postService.setReleasedYear(user, text);
             askBatteryLife(user);
@@ -176,9 +179,7 @@ public class BotService {
             postService.setReleasedYear(user, null);
             askReleasedYear(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidBatteryLife(text)) {
             postService.setBatteryLife(user, text);
             askKmDriven(user);
@@ -198,9 +199,7 @@ public class BotService {
             postService.setBatteryLife(user, null);
             askBatteryLife(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidKmDriven(text)) {
             postService.setKmDriven(user, text);
             askPrice(user);
@@ -220,9 +219,7 @@ public class BotService {
             postService.setKmDriven(user, null);
             askKmDriven(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidPrice(text)) {
             postService.setPrice(user, text);
             askAddress(user);
@@ -242,9 +239,7 @@ public class BotService {
             postService.setPrice(user, null);
             askPrice(user);
         } else if (text.equals(BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (validationUtil.isValidAddress(text)) {
             postService.setAddress(user, text);
             askScooterPhoto(user);
@@ -264,30 +259,71 @@ public class BotService {
             postService.setAddress(user, null);
             askAddress(user);
         } else if (Objects.equals(message.text(), BotConstants.CANCEL)) {
-            postService.deletePosterIfPresent(user);
-            messageService.sendMessage(user, "Bekor qilindi");
-            showMenu(user);
+            handleCancel(user);
         } else if (message.photo() != null) {
             Photo photo = photoService.getPhoto(message.photo());
             postService.setPhoto(user, photo);
-            String text = postService.getPosterMessage(user);
-            sendPoster(user, text, photo);
+            sendPoster(user, photo);
         } else {
             messageService.sendMessage(user, "Noto'g'ri format");
             askScooterPhoto(user);
         }
     }
 
-    private void sendPoster(TelegramUser user, String text, Photo photo) {
-        SendPhoto sendPhoto = new SendPhoto(user.getId(), photo.getContent());
-        sendPhoto.caption(text);
+    private void handleCancel(TelegramUser user) {
+        postService.deletePosterIfPresent(user);
+        messageService.sendMessage(user, "Bekor qilindi");
+        showMenu(user);
+    }
+
+    public void sendPoster(TelegramUser user, Photo photo) {
+        String posterMessage = postService.getPosterDetails(user).toString();
+        SendPhoto sendPhoto = postService.createPosterHeader(user, photo, posterMessage);
         sendPhoto.replyMarkup(botUtils.createPosterButton());
+        sendPhoto.parseMode(ParseMode.MarkdownV2);
         userService.changeUserState(user, TgState.CHOOSING_POST_OPTIONS);
         telegramBot.execute(sendPhoto);
     }
 
-    public void processPostOptions(TelegramUser user, String text) {
+    public void handlePostOptions(TelegramUser user, String text) {
+        switch (text) {
+            case BotConstants.CANCEL -> handleCancel(user);
+            case BotConstants.EDIT -> editPoster(user);
+            case BotConstants.POST -> sendPosterToAdmin(user);
+            default -> resendPoster(user);
+        }
+    }
 
+    private void editPoster(TelegramUser user) {
+        postService.deletePhoto(user);
+        askScooterPhoto(user);
+    }
+
+    private void resendPoster(TelegramUser user) {
+        messageService.sendMessage(user, "Noto'g'ri format");
+        sendPoster(user, postService.getPhoto(user));
+    }
+
+    private void sendPosterToAdmin(TelegramUser user) {
+        postService.setIsCompleted(user, true);
+        userService.changeUserState(user, TgState.PENDING);
+        Photo photo = postService.getPhoto(user);
+        String posterMessage = postService.getPosterDetails(user).toString();
+        Poster poster = postService.getPoster(user);
+        adminService.createAndSendPoster(poster, photo, posterMessage);
+    }
+
+    public void sendToChannel(UUID postId, boolean isAccepted) {
+        PosterDetails posterDetails = postService.setIsAccepted(postId, isAccepted);
+        SendPhoto sendPhoto = new SendPhoto(channelUsername, posterDetails.getPhoto().getContent());
+        sendPhoto.caption(posterDetails.toString()).parseMode(ParseMode.MarkdownV2);
+        telegramBot.execute(sendPhoto);
+    }
+
+    public void notifyUser(UUID postId) {
+        TelegramUser user = telegramUserService.getUserByPostId(postId);
+        postService.deletePoster(postId);
+        messageService.sendMessage(user, "Siznig eloningiz admin tomonidan rad etildi");
     }
 
 }
