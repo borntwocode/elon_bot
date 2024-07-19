@@ -1,13 +1,13 @@
 package uz.pdp.elonbot.bot;
 
 import com.pengrad.telegrambot.model.request.ParseMode;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.request.*;
 import uz.pdp.elonbot.entity.*;
 import uz.pdp.elonbot.entity.enums.*;
+import uz.pdp.elonbot.repo.PosterRepo;
 import uz.pdp.elonbot.service.*;
 import uz.pdp.elonbot.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,6 @@ import java.util.*;
 public class BotService {
 
     private final TelegramUserService telegramUserService;
-    @Value("${channel.username}")
-    private String channelUsername;
-
     private final MessageService messageService;
     private final TelegramUserService userService;
     private final ValidationUtil validationUtil;
@@ -30,6 +27,8 @@ public class BotService {
     private final TelegramBot telegramBot;
     private final AdminService adminService;
     private final TestService testService;
+    private final PosterRepo posterRepo;
+    private final ChannelService channelService;
 
     public void showMenu(TelegramUser user) {
         postService.deletePosterIfPresent(user);
@@ -313,17 +312,27 @@ public class BotService {
         adminService.createAndSendPoster(poster, photo, posterMessage);
     }
 
-    public void sendToChannel(UUID postId, boolean isAccepted) {
-        PosterDetails posterDetails = postService.setIsAccepted(postId, isAccepted);
-        SendPhoto sendPhoto = new SendPhoto(channelUsername, posterDetails.getPhoto().getContent());
-        sendPhoto.caption(posterDetails.toString()).parseMode(ParseMode.MarkdownV2);
-        telegramBot.execute(sendPhoto);
+    public void postAccepted(UUID postId, boolean isAccepted) {
+        Poster poster = postService.getPoster(postId);
+        if(!poster.isAccepted()){
+            channelService.sendToChannel(poster, isAccepted);
+        }
     }
 
     public void notifyUser(UUID postId) {
-        TelegramUser user = telegramUserService.getUserByPostId(postId);
-        postService.deletePoster(postId);
-        messageService.sendMessage(user, "Siznig eloningiz admin tomonidan rad etildi");
+        Poster poster = postService.getPoster(postId);
+        if(!poster.isAccepted() || poster.isSold()){
+            TelegramUser user = telegramUserService.getUserByPostId(postId);
+            postService.deletePoster(postId);
+            messageService.sendMessage(user, "Siznig eloningiz admin tomonidan rad etildi");
+        }
+    }
+
+    public void makePostSold(UUID postId) {
+        Poster poster = postService.getPoster(postId);
+        if(poster.isAccepted() && !poster.isSold()){
+            channelService.editPostCaption(poster);
+        }
     }
 
 }

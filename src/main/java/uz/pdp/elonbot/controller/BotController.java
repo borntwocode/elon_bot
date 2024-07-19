@@ -17,12 +17,17 @@ public class BotController {
 
     @PostMapping("/accepted/{postId}")
     void changePostAndSendToChannel(@PathVariable UUID postId){
-        botService.sendToChannel(postId, true);
+        botService.postAccepted(postId, true);
     }
 
     @PostMapping("/rejected/{postId}")
     void deletePostAndNotifyUser(@PathVariable UUID postId){
         botService.notifyUser(postId);
+    }
+
+    @PostMapping("/sold/{postId}")
+    void makePostSoldAndEditMessage(@PathVariable UUID postId){
+        botService.makePostSold(postId);
     }
 
 }

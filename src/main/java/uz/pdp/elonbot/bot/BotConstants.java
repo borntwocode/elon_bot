@@ -6,7 +6,8 @@ public interface BotConstants {
     String BACK = "Orqaga";
     String CANCEL = "Bekor qilish";
     String EDIT = "Tahrirlash";
-    String SUBMIT_POST = "Tasdiqlash";
-    String REJECT_POST = "Bekor qilish";
+    String REJECT_POST = "❌ Bekor qilish";
+    String SUBMIT_POST = "✅ Tasdiqlash";
+    String SOLD_POST = "🏷️ Sotildi";
 
 }

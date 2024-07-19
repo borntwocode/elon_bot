@@ -142,7 +142,7 @@ public class PostService {
     }
 
     public PosterDetails setIsAccepted(UUID postId, boolean isAccepted) {
-        Poster poster = posterRepo.findById(postId).orElseThrow();
+        Poster poster = getPoster(postId);
         poster.setAccepted(isAccepted);
         posterRepo.save(poster);
         return poster.getPosterDetails();
@@ -150,6 +150,28 @@ public class PostService {
 
     public void deletePoster(UUID postId) {
         posterRepo.deleteById(postId);
+    }
+
+    public Poster getPoster(UUID postId){
+        return posterRepo.findById(postId).orElseThrow();
+    }
+
+    public void setIsSold(UUID postId) {
+        Poster poster = getPoster(postId);
+        poster.setSold(true);
+        posterRepo.save(poster);
+    }
+
+    public void setChannelMessageId(UUID postId, Integer messageId) {
+        Poster poster = getPoster(postId);
+        poster.setChannelMessageId(messageId);
+        posterRepo.save(poster);
+    }
+
+    public void setAdminMessageId(UUID postId, Integer messageId) {
+        Poster poster = getPoster(postId);
+        poster.setAdminMessageId(messageId);
+        posterRepo.save(poster);
     }
 
 }

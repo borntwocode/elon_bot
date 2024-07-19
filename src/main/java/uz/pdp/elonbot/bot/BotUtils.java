@@ -5,15 +5,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.pdp.elonbot.entity.Poster;
 import uz.pdp.elonbot.entity.enums.ScooterType;
+import static uz.pdp.elonbot.bot.BotConstants.*;
 
 @Service
 @RequiredArgsConstructor
 public class BotUtils {
 
-    private static final KeyboardButton BACK_BUTTON = new KeyboardButton(BotConstants.BACK);
-    private static final KeyboardButton POST_BUTTON = new KeyboardButton(BotConstants.POST);
-    private static final KeyboardButton CANCEL_BUTTON = new KeyboardButton(BotConstants.CANCEL);
-    private static final KeyboardButton EDIT_BUTTON = new KeyboardButton(BotConstants.EDIT);
+    private static final KeyboardButton BACK_BUTTON = new KeyboardButton(BACK);
+    private static final KeyboardButton POST_BUTTON = new KeyboardButton(POST);
+    private static final KeyboardButton CANCEL_BUTTON = new KeyboardButton(CANCEL);
+    private static final KeyboardButton EDIT_BUTTON = new KeyboardButton(EDIT);
 
     public Keyboard createScooterTypeButtons() {
         var electric = new KeyboardButton(ScooterType.ELECTRIC.getDisplayName());
@@ -50,9 +51,9 @@ public class BotUtils {
     public Keyboard createPosterAdminButtons(Poster poster) {
         var keyboardMarkup = new InlineKeyboardMarkup();
         keyboardMarkup.addRow(
-                new InlineKeyboardButton(BotConstants.REJECT_POST).callbackData(BotConstants.REJECT_POST + "_" + poster.getId()),
-                new InlineKeyboardButton(BotConstants.SUBMIT_POST).callbackData(BotConstants.SUBMIT_POST + "_" + poster.getId())
-        );
+                new InlineKeyboardButton(REJECT_POST).callbackData(REJECT_POST + "_" + poster.getId()),
+                new InlineKeyboardButton(SUBMIT_POST).callbackData(SUBMIT_POST + "_" + poster.getId())
+        ).addRow(new InlineKeyboardButton(SOLD_POST).callbackData(SOLD_POST + "_" + poster.getId()));
         return keyboardMarkup;
     }
 

@@ -3,6 +3,7 @@ package uz.pdp.elonbot.service;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendPhoto;
+import com.pengrad.telegrambot.response.SendResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.pdp.elonbot.bot.BotUtils;
@@ -27,7 +28,8 @@ public class AdminService {
             sendPhoto.caption(posterMessage);
             sendPhoto.replyMarkup(botUtils.createPosterAdminButtons(poster));
             sendPhoto.parseMode(ParseMode.MarkdownV2);
-            adminBot.execute(sendPhoto);
+            SendResponse execute = adminBot.execute(sendPhoto);
+            Integer messageId = execute.message().messageId();
         }
     }
 

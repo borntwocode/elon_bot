@@ -28,6 +28,12 @@ public class Poster {
 
     private boolean isAccepted;
 
+    private boolean isSold;
+
+    private Integer channelMessageId;
+
+    private Integer adminMessageId;
+
     @OneToOne(cascade = CascadeType.ALL)
     private PosterDetails posterDetails;
 
