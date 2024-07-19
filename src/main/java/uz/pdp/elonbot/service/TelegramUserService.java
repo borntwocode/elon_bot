@@ -6,6 +6,8 @@ import uz.pdp.elonbot.entity.TelegramUser;
 import uz.pdp.elonbot.entity.enums.TgState;
 import uz.pdp.elonbot.repo.TelegramUserRepo;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class TelegramUserService {
@@ -29,6 +31,10 @@ public class TelegramUserService {
     public void changeUserState(TelegramUser user, TgState state) {
         user.setState(state);
         telegramUserRepo.save(user);
+    }
+
+    public TelegramUser getUserByPostId(UUID postId) {
+        return telegramUserRepo.findByPostId(postId);
     }
 
 }

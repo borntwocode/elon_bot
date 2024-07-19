@@ -1,5 +1,7 @@
 package uz.pdp.elonbot.service;
 
+import com.pengrad.telegrambot.request.SendPhoto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.pdp.elonbot.entity.Photo;
@@ -7,10 +9,13 @@ import uz.pdp.elonbot.entity.Poster;
 import uz.pdp.elonbot.entity.PosterDetails;
 import uz.pdp.elonbot.entity.TelegramUser;
 import uz.pdp.elonbot.entity.enums.ScooterType;
-import uz.pdp.elonbot.entity.enums.TgState;
+import uz.pdp.elonbot.repo.PhotoRepo;
 import uz.pdp.elonbot.repo.PosterDetailsRepo;
 import uz.pdp.elonbot.repo.PosterRepo;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +23,7 @@ public class PostService {
 
     private final PosterRepo posterRepo;
     private final PosterDetailsRepo posterDetailsRepo;
-    private final TelegramUserService telegramUserService;
+    private final PhotoRepo photoRepo;
 
     public void createPoster(TelegramUser user) {
         Poster poster = Poster.builder()
@@ -94,39 +99,57 @@ public class PostService {
         return getPosterDetails(user).getPhoto();
     }
 
+    @Transactional
     public void deletePosterIfPresent(TelegramUser user) {
-        List<Poster> posters = posterRepo.findAllByIsCompleted(false);
+        List<Poster> posters = posterRepo.findAllByIsCompletedAndUserId(false, user.getId());
         posterRepo.deleteAll(posters);
-        telegramUserService.changeUserState(user, TgState.START);
     }
 
-    public String getPosterMessage(TelegramUser user) {
-        PosterDetails details = getPosterDetails(user);
-        StringBuilder sb = new StringBuilder();
-        sb.append("Turi: ").append(details.getScooterType().getDisplayName()).append("\n")
-                .append("Modeli: ").append(details.getModel()).append("\n")
-                .append("Tezlik chegarasi: ").append(details.getMaxSpeed()).append("\n")
-                .append("Chiqarilgan yili: ").append(details.getReleasedYear()).append("\n")
-                .append("Bosib o'tgan yo'li: ").append(details.getKmDriven()).append("\n");
-
-        if (details.getScooterType().equals(ScooterType.GASOLINE)) {
-            sb.append("100 km ga benzin: ").append(details.getFuelTo100km()).append("\n")
-                    .append("Motor ot kuchi: ").append(details.getHorsePower()).append("\n");
-        } else {
-            sb.append("Zaryadka km ga yetadi: ").append(details.getBatteryLifeToKm()).append("\n")
-                    .append("Motor kuchi: ").append(details.getEnginePower()).append("\n");
-        }
-        return sb.toString();
+    @Transactional
+    public void deletePhoto(TelegramUser user) {
+        PosterDetails posterDetails = getPosterDetails(user);
+        Photo photo = posterDetails.getPhoto();
+        posterDetails.setPhoto(null);
+        posterDetailsRepo.save(posterDetails);
+        photoRepo.deleteById(photo.getId());
     }
 
-    private Poster getPoster(TelegramUser user) {
+    public void setIsCompleted(TelegramUser user, boolean isCompleted) {
+        Poster poster = getPoster(user);
+        poster.setCompleted(isCompleted);
+        posterRepo.save(poster);
+    }
+
+    public SendPhoto createPosterHeader(TelegramUser user, Photo photo, String text) {
+        SendPhoto sendPhoto = new SendPhoto(user.getId(), photo.getContent());
+        sendPhoto.caption(text);
+        return sendPhoto;
+    }
+
+    public boolean isPendingPoster(TelegramUser user) {
+        Optional<Poster> posterOpt = posterRepo.findByIsAcceptedAndUserId(false, user.getId());
+        return posterOpt.isPresent();
+    }
+
+    public Poster getPoster(TelegramUser user) {
         return posterRepo.findByUserId(user.getId());
     }
 
-    private void updatePosterDetails(TelegramUser user, java.util.function.Consumer<PosterDetails> updater) {
+    protected void updatePosterDetails(TelegramUser user, Consumer<PosterDetails> updater) {
         PosterDetails posterDetails = getPosterDetails(user);
         updater.accept(posterDetails);
         posterDetailsRepo.save(posterDetails);
+    }
+
+    public PosterDetails setIsAccepted(UUID postId, boolean isAccepted) {
+        Poster poster = posterRepo.findById(postId).orElseThrow();
+        poster.setAccepted(isAccepted);
+        posterRepo.save(poster);
+        return poster.getPosterDetails();
+    }
+
+    public void deletePoster(UUID postId) {
+        posterRepo.deleteById(postId);
     }
 
 }
