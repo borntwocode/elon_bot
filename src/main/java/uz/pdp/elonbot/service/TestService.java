@@ -27,10 +27,10 @@ public class TestService {
         byte[] bytes = getPhoto();
         Photo photo = Photo.builder().content(bytes).build();
         photoRepo.save(photo);
-        PosterDetails details = new PosterDetails(ScooterType.ELECTRIC, "model", "1", null, "1", "1", null, "1", "1", "1", "1", "1", photo);
+//        PosterDetails details = new PosterDetails(ScooterType.ELECTRIC, "model", "1", null, "1", "1", null, "1", "1", "1", "1", "1", photo);
         Poster poster = Poster.builder()
                 .user(user)
-                .posterDetails(details)
+//                .posterDetails(details)
                 .isCompleted(false)
                 .isAccepted(false)
                 .build();

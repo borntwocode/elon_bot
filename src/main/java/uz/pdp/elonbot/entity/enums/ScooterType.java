@@ -1,12 +1,13 @@
 package uz.pdp.elonbot.entity.enums;
 
 import lombok.Getter;
+import uz.pdp.elonbot.bot.BotConstants;
 
 @Getter
 public enum ScooterType {
 
-    ELECTRIC("Elektr"),
-    GASOLINE("Benzin");
+    ELECTRIC(BotConstants.ELECTOR),
+    GASOLINE(BotConstants.GASOLINE);
 
     private final String displayName;
 

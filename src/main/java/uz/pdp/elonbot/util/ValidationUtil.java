@@ -43,10 +43,7 @@ public class ValidationUtil {
     }
 
     public boolean isValidBatteryLife(String text) {
-        if (text == null || !text.matches("-?\\d+")) {
-            return false;
-        }
-        return Integer.parseInt(text) > 0;
+        return true;
     }
 
     public boolean isValidKmDriven(String text) {

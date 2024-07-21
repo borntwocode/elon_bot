@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import uz.pdp.elonbot.messages.ValidationMessages;
 
 @Component
 @RequiredArgsConstructor
@@ -23,8 +24,8 @@ public class MyBot implements CommandLineRunner {
         });
 
         BotCommand[] commands = new BotCommand[]{
-                new BotCommand(BotCommands.START, BotValidation.START),
-                new BotCommand(BotCommands.SETTINGS, BotValidation.SETTINGS),
+                new BotCommand(BotCommands.START, BotCommands.START),
+                new BotCommand(BotCommands.SETTINGS, BotCommands.SETTINGS),
         };
 
         telegramBot.execute(new SetMyCommands(commands));

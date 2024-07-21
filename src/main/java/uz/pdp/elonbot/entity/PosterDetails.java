@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import uz.pdp.elonbot.entity.enums.ScooterType;
 import java.util.UUID;
+import static uz.pdp.elonbot.messages.BotMessages.*;
 
 @Getter
 @Setter
@@ -45,45 +46,30 @@ public class PosterDetails {
     @OneToOne(cascade = CascadeType.REMOVE)
     private Photo photo;
 
-    public PosterDetails(ScooterType scooterType, String model, String maxSpeed, String horsePower, String enginePower, String releasedYear, String fuelTo100km, String batteryLifeToKm, String kmDriven, String price, String address, String phoneNumber, Photo photo) {
-        this.scooterType = scooterType;
-        this.model = model;
-        this.maxSpeed = maxSpeed;
-        this.horsePower = horsePower;
-        this.enginePower = enginePower;
-        this.releasedYear = releasedYear;
-        this.fuelTo100km = fuelTo100km;
-        this.batteryLifeToKm = batteryLifeToKm;
-        this.kmDriven = kmDriven;
-        this.price = price;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-        this.photo = photo;
+    public String getEnginePowerOrHorsePower() {
+        return scooterType.equals(ScooterType.ELECTRIC) ? ENTER_ENGINE_POWER : ENTER_HORSE_POWER;
+    }
+
+    public String getFuelOrBatteryConsumption() {
+        return scooterType.equals(ScooterType.ELECTRIC) ? ENTER_BATTERY_LIFE : ENTER_FUEL_TO_100_KM;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("🚀 **Skuter Tafsilotlari** 🚀\n\n")
-                .append("**Turi**: ").append(this.scooterType.getDisplayName()).append("\n")
-                .append("**Modeli**: ").append(this.model).append("\n")
-                .append("**Maksimal Tezlik**: ").append(this.maxSpeed).append(" km/soat\n")
-                .append("**Chiqarilgan Yili**: ").append(this.releasedYear).append("\n")
-                .append("**Bosib o'tgan Yo'li**: ").append(this.kmDriven).append(" km\n");
-
-        if (this.scooterType.equals(ScooterType.GASOLINE)) {
-            sb.append("**100 km ga Benzin**: ").append(this.fuelTo100km).append(" L/100 km\n")
-                    .append("**Ot Kuchi**: ").append(this.horsePower).append(" HP\n");
-        } else {
-            sb.append("**Zaryad Hayoti**: ").append(this.batteryLifeToKm).append(" km\n")
-                    .append("**Dvigatel Quvvati**: ").append(this.enginePower).append(" kW\n");
-        }
-
-        sb.append("**Narxi**: ").append(this.price).append(" USD\n")
-                .append("**Manzil**: ").append(this.address).append("\n")
-                .append("**Telefon Raqami**: ").append(this.phoneNumber).append("\n");
-        return sb.toString();
+        return "🚀 **Skuter Tafsilotlari** 🚀\n\n" +
+               "🔹 **Turi**: " + scooterType.getDisplayName() + "\n" +
+               "🔹 **Modeli**: " + model + "\n" +
+               "🔹 **Maksimal Tezlik**: " + maxSpeed + " 🚀\n" +
+               "🔹 **Chiqarilgan Yili**: " + releasedYear + " 📅\n" +
+               "🔹 **Bosib o'tgan Yo'li**: " + kmDriven + " 🌍\n" +
+               (scooterType.equals(ScooterType.GASOLINE) ?
+                       "🔹 **100 km ga Benzin**: " + fuelTo100km + " ⛽\n" +
+                       "🔹 **Ot Kuchi**: " + horsePower + " 🐎\n" :
+                       "🔹 **Zaryad Hayoti**: " + batteryLifeToKm + " 🔋\n" +
+                       "🔹 **Dvigatel Quvvati**: " + enginePower + " ⚡\n") +
+               "🔹 **Narxi**: " + price + " 💰\n" +
+               "🔹 **Manzil**: " + address + " 🏠\n" +
+               "🔹 **Telefon Raqami**: " + phoneNumber + " 📞";
     }
 
 }

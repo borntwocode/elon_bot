@@ -99,7 +99,6 @@ public class PostService {
         return getPosterDetails(user).getPhoto();
     }
 
-    @Transactional
     public void deletePosterIfPresent(TelegramUser user) {
         List<Poster> posters = posterRepo.findAllByIsCompletedAndUserId(false, user.getId());
         posterRepo.deleteAll(posters);
@@ -142,7 +141,7 @@ public class PostService {
     }
 
     public PosterDetails setIsAccepted(UUID postId, boolean isAccepted) {
-        Poster poster = getPoster(postId);
+        Poster poster = getPoster(postId).orElseThrow();
         poster.setAccepted(isAccepted);
         posterRepo.save(poster);
         return poster.getPosterDetails();
@@ -152,24 +151,24 @@ public class PostService {
         posterRepo.deleteById(postId);
     }
 
-    public Poster getPoster(UUID postId){
-        return posterRepo.findById(postId).orElseThrow();
+    public Optional<Poster> getPoster(UUID postId){
+        return posterRepo.findById(postId);
     }
 
     public void setIsSold(UUID postId) {
-        Poster poster = getPoster(postId);
+        Poster poster = getPoster(postId).orElseThrow();
         poster.setSold(true);
         posterRepo.save(poster);
     }
 
     public void setChannelMessageId(UUID postId, Integer messageId) {
-        Poster poster = getPoster(postId);
+        Poster poster = getPoster(postId).orElseThrow();
         poster.setChannelMessageId(messageId);
         posterRepo.save(poster);
     }
 
     public void setAdminMessageId(UUID postId, Integer messageId) {
-        Poster poster = getPoster(postId);
+        Poster poster = getPoster(postId).orElseThrow();
         poster.setAdminMessageId(messageId);
         posterRepo.save(poster);
     }
