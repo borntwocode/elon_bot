@@ -3,7 +3,7 @@ package uz.pdp.elonbot.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import uz.pdp.elonbot.bot.BotService;
+import uz.pdp.elonbot.bot.service.BotServiceImpl;
 import uz.pdp.elonbot.entity.Photo;
 import uz.pdp.elonbot.entity.Poster;
 import uz.pdp.elonbot.entity.PosterDetails;
@@ -23,7 +23,7 @@ public class TestService {
     private final PosterRepo posterRepo;
     private final TelegramUserService telegramUserService;
 
-    public void createPost(TelegramUser user, BotService botService) {
+    public void createPost(TelegramUser user, BotServiceImpl botServiceImpl) {
         byte[] bytes = getPhoto();
         Photo photo = Photo.builder().content(bytes).build();
         photoRepo.save(photo);
@@ -36,7 +36,7 @@ public class TestService {
                 .build();
         posterRepo.save(poster);
         telegramUserService.changeUserState(user, TgState.CHOOSING_POST_OPTIONS);
-        botService.sendPoster(user, photo);
+        botServiceImpl.sendPoster(user, photo);
     }
 
     @SneakyThrows

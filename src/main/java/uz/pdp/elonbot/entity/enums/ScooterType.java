@@ -1,7 +1,7 @@
 package uz.pdp.elonbot.entity.enums;
 
 import lombok.Getter;
-import uz.pdp.elonbot.bot.BotConstants;
+import uz.pdp.elonbot.messages.BotConstants;
 
 @Getter
 public enum ScooterType {

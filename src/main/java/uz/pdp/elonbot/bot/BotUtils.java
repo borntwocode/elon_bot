@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uz.pdp.elonbot.entity.Poster;
 import uz.pdp.elonbot.entity.enums.ScooterType;
-import static uz.pdp.elonbot.bot.BotConstants.*;
+import static uz.pdp.elonbot.messages.BotConstants.*;
 
 @Service
 @RequiredArgsConstructor

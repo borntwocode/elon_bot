@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import uz.pdp.elonbot.messages.BotCommands;
 
 @Component
 @RequiredArgsConstructor

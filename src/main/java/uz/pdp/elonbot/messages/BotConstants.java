@@ -1,4 +1,4 @@
-package uz.pdp.elonbot.bot;
+package uz.pdp.elonbot.messages;
 
 public interface BotConstants {
 

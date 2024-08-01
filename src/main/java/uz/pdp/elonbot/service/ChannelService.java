@@ -7,7 +7,7 @@ import com.pengrad.telegrambot.request.*;
 import com.pengrad.telegrambot.response.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uz.pdp.elonbot.bot.BotConstants;
+import uz.pdp.elonbot.messages.BotConstants;
 import uz.pdp.elonbot.entity.*;
 import lombok.*;
 

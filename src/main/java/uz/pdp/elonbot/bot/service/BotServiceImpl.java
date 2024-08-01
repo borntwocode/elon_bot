@@ -1,10 +1,12 @@
-package uz.pdp.elonbot.bot;
+package uz.pdp.elonbot.bot.service;
 
 import com.pengrad.telegrambot.model.request.ParseMode;
 import org.springframework.stereotype.Service;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.request.*;
+import uz.pdp.elonbot.messages.BotConstants;
+import uz.pdp.elonbot.bot.BotUtils;
 import uz.pdp.elonbot.entity.*;
 import uz.pdp.elonbot.entity.enums.*;
 import uz.pdp.elonbot.service.*;
@@ -16,7 +18,7 @@ import static uz.pdp.elonbot.messages.BotMessages.*;
 
 @Service
 @RequiredArgsConstructor
-public class BotService {
+public class BotServiceImpl implements BotService{
 
     private final TelegramUserService telegramUserService;
     private final MessageService messageService;
@@ -30,12 +32,14 @@ public class BotService {
     private final ChannelService channelService;
     private final GroupService groupService;
 
+    @Override
     public void showMenu(TelegramUser user) {
         postService.deletePosterIfPresent(user);
         userService.changeUserState(user, TgState.CHOOSING_MENU);
         messageService.sendWithButton(user, CHOOSE_OPTIONS, botUtils.createMenuButtons());
     }
 
+    @Override
     public void createPosterAndAskPhoneNumber(TelegramUser user) {
         if (postService.isPendingPoster(user)) {
             messageService.sendMessage(user, WAIT_YOUR_POST_IS_IN_WORK);
@@ -52,6 +56,7 @@ public class BotService {
         messageService.sendWithButton(user, ENTER_PHONE_NUMBER, botUtils.createCancelButton());
     }
 
+    @Override
     public void getPhoneAndAskScooterType(TelegramUser user, String text) {
         if (text.equals(BotConstants.CANCEL)) {
             handleCancel(user);
@@ -69,6 +74,7 @@ public class BotService {
         messageService.sendWithButton(user, CHOOSE_SCOOTER_TYPE, botUtils.createScooterTypeButtons());
     }
 
+    @Override
     public void getScooterTypeAndAskModel(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setPhone(user, null);
@@ -89,6 +95,7 @@ public class BotService {
         messageService.sendWithBackButton(user, ENTER_SCOOTER_MODEL);
     }
 
+    @Override
     public void getModelAndAskMaxSpeed(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setScooterType(user, null);
@@ -109,6 +116,7 @@ public class BotService {
         messageService.sendWithBackButton(user, ENTER_MAX_SPEED);
     }
 
+    @Override
     public void getMaxSpeedAndAskEnginePower(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setModel(user, null);
@@ -131,6 +139,7 @@ public class BotService {
         messageService.sendWithBackButton(user, text);
     }
 
+    @Override
     public void getEnginePowerAndAskYear(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setMaxSpeed(user, null);
@@ -151,6 +160,7 @@ public class BotService {
         messageService.sendWithBackButton(user, ENTER_RELEASED_YEAR);
     }
 
+    @Override
     public void getReleasedYearAndAskBatteryLife(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setEnginePower(user, null);
@@ -173,6 +183,7 @@ public class BotService {
         messageService.sendWithBackButton(user, text);
     }
 
+    @Override
     public void getBatteryLifeAndAskKmDriven(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setReleasedYear(user, null);
@@ -193,6 +204,7 @@ public class BotService {
         messageService.sendWithBackButton(user, ENTER_KM_DRIVEN);
     }
 
+    @Override
     public void getKmDrivenAndAskPrice(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setBatteryLife(user, null);
@@ -213,6 +225,7 @@ public class BotService {
         messageService.sendWithBackButton(user, ENTER_SCOOTER_PRICE);
     }
 
+    @Override
     public void getPriceAndAskAddress(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setKmDriven(user, null);
@@ -233,6 +246,7 @@ public class BotService {
         messageService.sendWithBackButton(user, ENTER_ADDRESS);
     }
 
+    @Override
     public void getAddressAndAskPhoto(TelegramUser user, String text) {
         if (text.equals(BotConstants.BACK)) {
             postService.setPrice(user, null);
@@ -253,6 +267,7 @@ public class BotService {
         userService.changeUserState(user, TgState.SENDING_PHOTO);
     }
 
+    @Override
     public void getPhotoAndSendPost(TelegramUser user, Message message) {
         String text = message.text();
         if (Objects.equals(text, BotConstants.BACK)) {
@@ -272,12 +287,14 @@ public class BotService {
         }
     }
 
+    @Override
     public void handleCancel(TelegramUser user) {
         postService.deletePosterIfPresent(user);
         messageService.sendMessage(user, CANCELLED);
         showMenu(user);
     }
 
+    @Override
     public void sendPoster(TelegramUser user, Photo photo) {
         String posterMessage = postService.getPosterDetails(user).toString();
         SendPhoto sendPhoto = postService.createPosterHeader(user, photo, posterMessage);
@@ -287,16 +304,19 @@ public class BotService {
         telegramBot.execute(sendPhoto);
     }
 
+    @Override
     public void editPoster(TelegramUser user) {
         postService.deletePhoto(user);
         askScooterPhoto(user);
     }
 
+    @Override
     public void resendPoster(TelegramUser user) {
         messageService.sendMessage(user, POST_OPTIONS_HINT);
         sendPoster(user, postService.getPhoto(user));
     }
 
+    @Override
     public void sendPosterToGroup(TelegramUser user) {
         messageService.sendMessage(user, WAIT_YOUR_POST_IS_IN_WORK);
         postService.setIsCompleted(user, true);
@@ -307,6 +327,7 @@ public class BotService {
         showMenu(user);
     }
 
+    @Override
     public void submitPost(UUID postId) {
         Optional<Poster> posterOpt = postService.getPoster(postId);
         if (posterOpt.isPresent() && !posterOpt.get().isAccepted()) {
@@ -318,6 +339,7 @@ public class BotService {
         }
     }
 
+    @Override
     public void rejectPost(UUID postId) {
         Optional<Poster> posterOpt = postService.getPoster(postId);
         if(posterOpt.isPresent()){
@@ -331,6 +353,7 @@ public class BotService {
         }
     }
 
+    @Override
     public void soldPost(UUID postId) {
         Optional<Poster> posterOpt = postService.getPoster(postId);
         if (posterOpt.isPresent() && posterOpt.get().isAccepted() && !posterOpt.get().isSold()) {
@@ -340,6 +363,7 @@ public class BotService {
         }
     }
 
+    @Override
     public void deletePost(UUID postId) {
         Optional<Poster> posterOpt = postService.getPoster(postId);
         if (posterOpt.isPresent()) {
@@ -352,16 +376,19 @@ public class BotService {
         }
     }
 
+    @Override
     public boolean isMemberOfChannel(Long chatId) {
         return channelService.isUserMemberOfChannel(chatId);
     }
 
+    @Override
     public void askToFollow(Long chatId) {
         SendMessage sendMessage = new SendMessage(chatId, FOLLOW_CHANNEL);
         sendMessage.replyMarkup(botUtils.createFollowChannelButtons(chatId));
         telegramBot.execute(sendMessage);
     }
 
+    @Override
     public void checkUserIsMember(TelegramUser user) {
         if(channelService.isUserMemberOfChannel(user.getUserId())){
             showMenu(user);
