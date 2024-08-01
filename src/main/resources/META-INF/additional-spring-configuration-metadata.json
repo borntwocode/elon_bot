@@ -14,5 +14,40 @@
       "name": "bot.token",
       "type": "java.lang.String",
       "description": "Description for bot.token."
+    },
+    {
+      "name": "admin.group.chat.id",
+      "type": "java.lang.String",
+      "description": "Description for admin.group.chat.id."
+    },
+    {
+      "name": "channel.chat.id",
+      "type": "java.lang.String",
+      "description": "Description for channel.chat.id."
+    },
+    {
+      "name": "instagram.url",
+      "type": "java.lang.String",
+      "description": "Description for instagram.url."
+    },
+    {
+      "name": "youtube.url",
+      "type": "java.lang.String",
+      "description": "Description for youtube.url."
+    },
+    {
+      "name": "channel1.url",
+      "type": "java.lang.String",
+      "description": "Description for channel1.url."
+    },
+    {
+      "name": "channel2.url",
+      "type": "java.lang.String",
+      "description": "Description for channel2.url."
+    },
+    {
+      "name": "channel2.chat.id",
+      "type": "java.lang.String",
+      "description": "Description for channel2.chat.id."
     }
   ] }

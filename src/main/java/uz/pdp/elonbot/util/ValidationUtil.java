@@ -26,7 +26,7 @@ public class ValidationUtil {
             return false;
         }
         int maxSpeed = Integer.parseInt(text);
-        return maxSpeed > 0 && maxSpeed < 300;
+        return maxSpeed > 20 && maxSpeed < 300;
     }
 
     public boolean isValidEnginePower(String text) {

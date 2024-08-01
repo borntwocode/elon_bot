@@ -21,5 +21,7 @@ public interface BotMessages {
     String POST_OPTIONS_HINT = "Noto'g'ri format. Iltimos, pastdagi tugmalardan birini tanlang ⛔";
     String POST_REJECTED = "Afsuski, e'loningiz admin tomonidan rad etildi. Iltimos, talablarni qayta ko'rib chiqib, yana urinib ko'ring. ✅";
     String POST_ACCEPTED = "Tabriklaymiz! 🎉 Sizning e'loningiz admin tomonidan qabul qilindi va kanalga joylashtirildi. Muvaffaqiyat tilaymiz! 📢";
+    String FOLLOW_CHANNEL = "Botdan to'liq foydalanish uchun pastdagi tugmani bosib, kanalimizga a'zo bo'ling.";
+    String NOT_FOLLOWED = "Kerakli kanallarga obuna bo'lmagansiz.";
 
 }

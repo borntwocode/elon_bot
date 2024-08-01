@@ -26,9 +26,9 @@ public class BotService {
     private final PostService postService;
     private final PhotoService photoService;
     private final TelegramBot telegramBot;
-    private final AdminService adminService;
     private final TestService testService;
     private final ChannelService channelService;
+    private final GroupService groupService;
 
     public void showMenu(TelegramUser user) {
         postService.deletePosterIfPresent(user);
@@ -297,39 +297,76 @@ public class BotService {
         sendPoster(user, postService.getPhoto(user));
     }
 
-    public void sendPosterToAdmin(TelegramUser user) {
+    public void sendPosterToGroup(TelegramUser user) {
         messageService.sendMessage(user, WAIT_YOUR_POST_IS_IN_WORK);
         postService.setIsCompleted(user, true);
-        userService.changeUserState(user, TgState.PENDING);
         Photo photo = postService.getPhoto(user);
         String posterMessage = postService.getPosterDetails(user).toString();
         Poster poster = postService.getPoster(user);
-        adminService.createAndSendPoster(poster, photo, posterMessage);
+        groupService.createAndSendPoster(poster, photo, posterMessage);
+        showMenu(user);
     }
 
-    public void postAccepted(UUID postId, boolean isAccepted) {
+    public void submitPost(UUID postId) {
         Optional<Poster> posterOpt = postService.getPoster(postId);
         if (posterOpt.isPresent() && !posterOpt.get().isAccepted()) {
             Poster poster = posterOpt.get();
             TelegramUser user = poster.getUser();
-            channelService.sendToChannel(poster, isAccepted);
+            channelService.sendToChannel(poster, true);
             messageService.sendMessage(user, POST_ACCEPTED);
+            groupService.editAcceptedPostButtons(poster);
         }
     }
 
-    public void notifyUser(UUID postId) {
-        Poster poster = postService.getPoster(postId).orElseThrow();
-        if (!poster.isAccepted()) {
-            TelegramUser user = telegramUserService.getUserByPostId(postId);
-            postService.deletePoster(postId);
-            messageService.sendMessage(user, POST_REJECTED);
+    public void rejectPost(UUID postId) {
+        Optional<Poster> posterOpt = postService.getPoster(postId);
+        if(posterOpt.isPresent()){
+            Poster poster = posterOpt.get();
+            if (!poster.isAccepted()) {
+                TelegramUser user = telegramUserService.getUserByPostId(postId);
+                postService.deletePoster(postId);
+                messageService.sendMessage(user, POST_REJECTED);
+                groupService.deleteRejectedPost(poster);
+            }
         }
     }
 
-    public void makePostSold(UUID postId) {
+    public void soldPost(UUID postId) {
         Optional<Poster> posterOpt = postService.getPoster(postId);
         if (posterOpt.isPresent() && posterOpt.get().isAccepted() && !posterOpt.get().isSold()) {
+            Poster poster = posterOpt.get();
             channelService.editPostCaption(posterOpt.get());
+            groupService.editSoldPostButtons(poster);
+        }
+    }
+
+    public void deletePost(UUID postId) {
+        Optional<Poster> posterOpt = postService.getPoster(postId);
+        if (posterOpt.isPresent()) {
+            Poster poster = posterOpt.get();
+            if (poster.isAccepted()) {
+                channelService.deletePost(poster);
+                groupService.deleteRejectedPost(poster);
+                postService.deletePoster(postId);
+            }
+        }
+    }
+
+    public boolean isMemberOfChannel(Long chatId) {
+        return channelService.isUserMemberOfChannel(chatId);
+    }
+
+    public void askToFollow(Long chatId) {
+        SendMessage sendMessage = new SendMessage(chatId, FOLLOW_CHANNEL);
+        sendMessage.replyMarkup(botUtils.createFollowChannelButtons(chatId));
+        telegramBot.execute(sendMessage);
+    }
+
+    public void checkUserIsMember(TelegramUser user) {
+        if(channelService.isUserMemberOfChannel(user.getUserId())){
+            showMenu(user);
+        }else{
+            messageService.sendMessage(user, NOT_FOLLOWED);
         }
     }
 

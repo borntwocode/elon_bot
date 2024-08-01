@@ -167,8 +167,7 @@ public class PostService {
         posterRepo.save(poster);
     }
 
-    public void setAdminMessageId(UUID postId, Integer messageId) {
-        Poster poster = getPoster(postId).orElseThrow();
+    public void setAdminMessageId(Poster poster, Integer messageId) {
         poster.setAdminMessageId(messageId);
         posterRepo.save(poster);
     }

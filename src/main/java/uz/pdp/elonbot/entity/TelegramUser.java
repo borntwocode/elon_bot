@@ -18,9 +18,13 @@ public class TelegramUser {
     @Id
     private Long id;
 
+    private Long userId;
+
     private String phoneNumber;
 
     private String firstName;
+
+    private boolean isFollowed;
 
     @Enumerated(value = EnumType.STRING)
     private TgState state;

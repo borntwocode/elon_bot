@@ -16,6 +16,5 @@ public enum TgState {
     ENTERING_ADDRESS,
     SENDING_PHOTO,
     CHOOSING_POST_OPTIONS,
-    PENDING,
 
 }

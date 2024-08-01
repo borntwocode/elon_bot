@@ -11,5 +11,8 @@ public interface BotConstants {
     String SOLD_POST = "🏷️ Sotildi";
     String ELECTOR = "⚡ Elektr";
     String GASOLINE = "⛽ Benzin";
+    String DELETE_POST = "❌ Kanaldan o'chirish";
+    String FOLLOW = "📲 A'zo bo'lish";
+    String CHECK = "🔍 Tekshirish";
 
 }

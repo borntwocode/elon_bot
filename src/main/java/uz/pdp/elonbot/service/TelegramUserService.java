@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import uz.pdp.elonbot.entity.TelegramUser;
 import uz.pdp.elonbot.entity.enums.TgState;
 import uz.pdp.elonbot.repo.TelegramUserRepo;
-
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -14,15 +14,16 @@ public class TelegramUserService {
 
     private final TelegramUserRepo telegramUserRepo;
 
-    public TelegramUser findUser(Long chatId, String firstName) {
+    public TelegramUser findUser(Long chatId, Long userId, String username) {
         return telegramUserRepo.findById(chatId)
-                .orElseGet(() -> createAndSaveUser(firstName, chatId));
+                .orElseGet(() -> createAndSaveUser(userId, chatId, username));
     }
 
-    private TelegramUser createAndSaveUser(String firstName, Long chatId) {
+    private TelegramUser createAndSaveUser(Long chatId, Long userId, String username) {
         TelegramUser user = TelegramUser.builder()
                 .id(chatId)
-                .firstName(firstName)
+                .userId(userId)
+                .firstName(username)
                 .state(TgState.START)
                 .build();
         return telegramUserRepo.save(user);
@@ -35,6 +36,10 @@ public class TelegramUserService {
 
     public TelegramUser getUserByPostId(UUID postId) {
         return telegramUserRepo.findByPostId(postId);
+    }
+
+    public List<TelegramUser> getAllFollowers() {
+        return telegramUserRepo.findAll();
     }
 
 }

@@ -72,4 +72,20 @@ public class PosterDetails {
                "🔹 **Telefon Raqami**: " + phoneNumber + " 📞";
     }
 
+    public PosterDetails(ScooterType scooterType, String model, String maxSpeed, String horsePower, String enginePower, String releasedYear, String fuelTo100km, String batteryLifeToKm, String kmDriven, String price, String address, String phoneNumber, Photo photo) {
+        this.scooterType = scooterType;
+        this.model = model;
+        this.maxSpeed = maxSpeed;
+        this.horsePower = horsePower;
+        this.enginePower = enginePower;
+        this.releasedYear = releasedYear;
+        this.fuelTo100km = fuelTo100km;
+        this.batteryLifeToKm = batteryLifeToKm;
+        this.kmDriven = kmDriven;
+        this.price = price;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.photo = photo;
+    }
+
 }

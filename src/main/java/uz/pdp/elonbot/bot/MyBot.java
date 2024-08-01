@@ -7,7 +7,6 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import uz.pdp.elonbot.messages.ValidationMessages;
 
 @Component
 @RequiredArgsConstructor
@@ -15,6 +14,7 @@ public class MyBot implements CommandLineRunner {
 
     private final BotUpdateHandler updateHandler;
     private final TelegramBot telegramBot;
+    private final TelegramBot adminBot;
 
     @Override
     public void run(String... args) {
@@ -29,6 +29,17 @@ public class MyBot implements CommandLineRunner {
         };
 
         telegramBot.execute(new SetMyCommands(commands));
+
+        adminBot.setUpdatesListener(updates -> {
+            updates.forEach(updateHandler::handleAdminUpdate);
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
+        });
+
+        BotCommand[] adminCommands = new BotCommand[]{
+                new BotCommand(BotCommands.START, BotCommands.START)
+        };
+
+        adminBot.execute(new SetMyCommands(adminCommands));
     }
 
 }
